@@ -1,5 +1,5 @@
 const axios = require("axios");
-const configs = require("../../configs");
+const configs = require("../../configs.mjs");
 const { wait, handleAxios } = require("../../helpers");
 describe("register user", () => {
   let user;
@@ -103,9 +103,5 @@ describe("register user", () => {
     expect(response.data.email).toEqual(user.email);
     expect(response.data.credit).toEqual(user.credit);
     expect(response.data.usage).toEqual(user.usage);
-  });
-  it("resets e2e data", async () => {
-    const response = await axios.post("/e2e/reset", undefined, { baseURL: configs.nexusBaseUrl });
-    expect(response.status).toEqual(200);
   });
 });
