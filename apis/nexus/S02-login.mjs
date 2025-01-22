@@ -14,6 +14,9 @@ export default async function main() {
   await test5();
   await test6();
   await test7();
+  await test8();
+  await test9();
+  await test10();
 }
 
 // fails with empty payload
@@ -89,5 +92,32 @@ async function test7() {
   const response = await handleAxios(
     axios.get("/profile", { baseURL, headers: { Authorization: "Bearer false token" } })
   );
+  assert.equal(response.status, 401);
+}
+
+// fails to rotate with access token
+async function test8() {
+  const response = await handleAxios(
+    axios.post("/auth/rotate", { token: getStore("user1_access_token") }, { baseURL })
+  );
+  assert.equal(response.status, 401);
+}
+
+// rotates with refresh token
+async function test9() {
+  const response = await handleAxios(
+    axios.post("/auth/rotate", { token: getStore("user1_refresh_token") }, { baseURL })
+  );
+  assert.equal(response.status, 200);
+  assert.isString(response.data.access_token);
+  assert.isString(response.data.refresh_token);
+  assert.isObject(response.data.data);
+  assert.isString(response.data.data.id);
+  assert.isString(response.data.data.username);
+}
+
+// fails to rotate with invalid token
+async function test10() {
+  const response = await handleAxios(axios.post("/auth/rotate", { token: "invalid token" }, { baseURL }));
   assert.equal(response.status, 401);
 }

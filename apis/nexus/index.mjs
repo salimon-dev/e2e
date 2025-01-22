@@ -6,6 +6,7 @@ import { handleAxios } from "../helpers.mjs";
 // scenarios
 import heartbeat from "./S00-heatbeat.mjs";
 import register from "./S01-register.mjs";
+import login from "./S02-login.mjs";
 
 async function resetData() {
   const response = await handleAxios(axios.post("/e2e/reset", undefined, { baseURL }));
@@ -20,6 +21,7 @@ async function main() {
 
     await heartbeat();
     await register();
+    await login();
 
     console.log("\x1b[32m[CORE]\x1b[0m\t\tall tests finished");
   } catch (error) {

@@ -52,7 +52,7 @@ async function test3() {
   const response = await handleAxios(
     axios.post(
       "/auth/register",
-      { email: "user1@e2e-test.com", password: "user1", username: "testpassword" },
+      { email: "user1@e2e-test.com", password: "testpassword", username: "user1" },
       { baseURL }
     )
   );
