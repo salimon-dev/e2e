@@ -5,7 +5,7 @@ import { handleAxios } from "../helpers.mjs";
 import { setStore, getStore } from "./store.mjs";
 
 export default async function main() {
-  console.log("[SC01]\t\tuser logs in and rotates token");
+  console.log("\n[SC02]\t\t\u001b[34muser logs in and rotates token\u001b[0m");
   await test0();
   await test1();
   await test2();
@@ -16,7 +16,6 @@ export default async function main() {
   await test7();
   await test8();
   await test9();
-  await test10();
 }
 
 // fails with empty payload
@@ -25,6 +24,7 @@ async function test0() {
   assert.equal(response.status, 400);
   assert.equal(response.data.email, "email is required");
   assert.equal(response.data.password, "password is required");
+  console.log("\t\tfails with empty payload");
 }
 
 // fails with invalid email
@@ -33,6 +33,7 @@ async function test1() {
   assert.equal(response.status, 400);
   assert.equal(response.data.email, "email must be a valid email");
   assert.equal(response.data.password, "password is required");
+  console.log("\t\tfails with invalid email address");
 }
 
 // fails with short password
@@ -43,6 +44,7 @@ async function test2() {
   assert.equal(response.status, 400);
   assert.equal(response.data.email, "email must be a valid email");
   assert.equal(response.data.password, "password must be more or equal than 5 charachters");
+  console.log("\t\tfails with short password");
 }
 
 // fails with wrong info
@@ -52,6 +54,7 @@ async function test3() {
     axios.post("/auth/login", { email: user.email, password: "wrongpassword" }, { baseURL })
   );
   assert.equal(response.status, 401);
+  console.log("\t\tfails with wrong login info");
 }
 
 // logs in
@@ -69,42 +72,38 @@ async function test4() {
 
   setStore("user1_access_token", response.data.access_token);
   setStore("user1_refresh_token", response.data.refresh_token);
-}
-
-// fails verification with empty
-async function test5() {
-  const response = await handleAxios(axios.post("/auth/register/verify", undefined, { baseURL }));
-  assert.equal(response.status, 400);
-  assert.equal(response.data.email, "email is required");
-  assert.equal(response.data.token, "token is required");
+  console.log("\t\tlogs in");
 }
 
 // gets profile
-async function test6() {
+async function test5() {
   const response = await handleAxios(
     axios.get("/profile", { baseURL, headers: { Authorization: "Bearer " + getStore("user1_access_token") } })
   );
   assert.equal(response.status, 200);
+  console.log("\t\tgets profile with token");
 }
 
 // auth token throws error when it's wrong
-async function test7() {
+async function test6() {
   const response = await handleAxios(
     axios.get("/profile", { baseURL, headers: { Authorization: "Bearer false token" } })
   );
   assert.equal(response.status, 401);
+  console.log("\t\tfails to get profile with wrong token");
 }
 
 // fails to rotate with access token
-async function test8() {
+async function test7() {
   const response = await handleAxios(
     axios.post("/auth/rotate", { token: getStore("user1_access_token") }, { baseURL })
   );
   assert.equal(response.status, 401);
+  console.log("\t\trotates failure with wrong access token");
 }
 
 // rotates with refresh token
-async function test9() {
+async function test8() {
   const response = await handleAxios(
     axios.post("/auth/rotate", { token: getStore("user1_refresh_token") }, { baseURL })
   );
@@ -114,10 +113,12 @@ async function test9() {
   assert.isObject(response.data.data);
   assert.isString(response.data.data.id);
   assert.isString(response.data.data.username);
+  console.log("\t\trotate success with refresh token");
 }
 
 // fails to rotate with invalid token
-async function test10() {
+async function test9() {
   const response = await handleAxios(axios.post("/auth/rotate", { token: "invalid token" }, { baseURL }));
   assert.equal(response.status, 401);
+  console.log("\t\tfails to rotate with invalid token");
 }

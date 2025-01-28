@@ -5,7 +5,7 @@ import { handleAxios } from "../helpers.mjs";
 import { setStore, getStore } from "./store.mjs";
 
 export default async function main() {
-  console.log("[SC01]\t\tuser can regsiter");
+  console.log("\n[SC01]\t\t\u001b[34muser can regsiter\u001b[0m");
   await test0();
   await test1();
   await test2();
@@ -25,6 +25,7 @@ async function test0() {
   assert.equal(response.data.email, "email is required");
   assert.equal(response.data.username, "username is required");
   assert.equal(response.data.password, "password is required");
+  console.log("\t\tfails with empty payload");
 }
 
 // fails with invalid email
@@ -34,6 +35,7 @@ async function test1() {
   assert.equal(response.data.email, "email must be a valid email");
   assert.equal(response.data.username, "username is required");
   assert.equal(response.data.password, "password is required");
+  console.log("\t\tfails with invalid email");
 }
 
 // fails with short password
@@ -45,6 +47,7 @@ async function test2() {
   assert.equal(response.data.email, "email must be a valid email");
   assert.equal(response.data.username, "username is required");
   assert.equal(response.data.password, "password must be more or equal than 5 charachters");
+  console.log("\t\tfails with short password");
 }
 
 // registers
@@ -57,6 +60,7 @@ async function test3() {
     )
   );
   assert.equal(response.status, 200);
+  console.log("\t\tregisters");
 }
 
 // gets data
@@ -77,6 +81,7 @@ async function test5() {
   assert.equal(response.status, 400);
   assert.equal(response.data.email, "email is required");
   assert.equal(response.data.token, "token is required");
+  console.log("\t\tfails verification with empty payload");
 }
 
 // fails with wrong token
@@ -86,6 +91,7 @@ async function test6() {
     axios.post("/auth/register/verify", { email: user.email, token: "invalid token" }, { baseURL })
   );
   assert.equal(response.status, 401);
+  console.log("\t\tfails verification with invalid token");
 }
 
 // verifies with data
@@ -104,6 +110,7 @@ async function test7() {
 
   setStore("user1_access_token", response.data.access_token);
   setStore("user1_refresh_token", response.data.refresh_token);
+  console.log("\t\tverifies with correct data");
 }
 
 // gets profile
@@ -112,6 +119,7 @@ async function test8() {
     axios.get("/profile", { baseURL, headers: { Authorization: "Bearer " + getStore("user1_access_token") } })
   );
   assert.equal(response.status, 200);
+  console.log("\t\tgets profile with correct token");
 }
 
 // auth token throws error when it's wrong
@@ -120,4 +128,5 @@ async function test9() {
     axios.get("/profile", { baseURL, headers: { Authorization: "Bearer false token" } })
   );
   assert.equal(response.status, 401);
+  console.log("\t\tfails to get profile with incorrect token");
 }
