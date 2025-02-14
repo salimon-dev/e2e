@@ -1,7 +1,7 @@
 import axios from "axios";
 import { assert } from "chai";
 import { nexusBaseUrl as baseURL } from "../configs.mjs";
-import { handleAxios } from "../helpers.mjs";
+import { handleAxios, wait } from "../helpers.mjs";
 import { setStore, getStore } from "./store.mjs";
 import WebSocket from "ws";
 
@@ -15,10 +15,11 @@ async function createConnection() {
 }
 
 export default async function main() {
-  console.log("\n[SC03]\t\t\u001b[34mconnects to websocket connection and logs in\u001b[0m");
+  console.log("\n[SC41]\t\t\u001b[34mconnects to websocket connection and logs in\u001b[0m");
   const ws = await createConnection();
   for (let i = 0; i < tests.length; i++) {
     await tests[i](ws);
+    await wait(50);
   }
   ws.close();
 }
