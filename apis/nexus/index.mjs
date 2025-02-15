@@ -13,7 +13,7 @@ import login from "./S04-login.mjs";
 import entities from "./S05-entities.mjs";
 import users from "./S06-users.mjs";
 // websocket scenarios
-import wsAuth from "./S41-ws-auth.mjs";
+import wsBasic from "./S41-ws-basic.mjs";
 import { cleanUp } from "./cleanup.mjs";
 
 // async function resetData() {
@@ -34,7 +34,7 @@ async function main() {
     await login();
     await entities();
     await users();
-    await wsAuth();
+    await wsBasic();
 
     console.log("\n\x1b[32m[CORE]\x1b[0m\t\tall tests finished");
     // await resetData();

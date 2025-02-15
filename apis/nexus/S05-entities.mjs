@@ -162,4 +162,39 @@ const tests = [
 
     console.log("\t\tdeletes the same entity");
   },
+  // creates an entity for websocket testing
+  async function () {
+    const response = await handleAxios(
+      axios.post(
+        "/entities/create",
+        {
+          name: "e2e",
+          base_url: "http://localhost:80/e2e",
+          credit: 0,
+          description: "entity for e2e testing",
+          status: 1,
+          permission: 1,
+        },
+        {
+          baseURL,
+          headers: { Authorization: "Bearer " + getStore("keymaker_access_token") },
+        }
+      )
+    );
+    assert.equal(response.status, 200);
+
+    assert.isString(response.data.id);
+    assert.isString(response.data.name);
+    assert.isString(response.data.description);
+    assert.isNumber(response.data.status);
+    assert.isNumber(response.data.permission);
+    assert.isString(response.data.base_url);
+    assert.isNumber(response.data.credit);
+    assert.isString(response.data.created_at);
+    assert.isString(response.data.updated_at);
+
+    appendStore("entities", response.data);
+
+    console.log("\t\tcreates an entity for websocket testing");
+  },
 ];

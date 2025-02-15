@@ -170,27 +170,43 @@ const tests = [
   },
   // sends message to entity
   async function (ws) {
-    const tokens = ["this", "is", "a", "new", "message"];
-    function expectToken(index) {
-      return new Promise((resolve, reject) => {
-        ws.once("message", (data) => {
-          try {
-            const msg = JSON.parse(data.toString());
-            assert.equal(msg.action, "TOKEN");
-            assert.equal(msg.token, tokens[index]);
-            resolve();
-          } catch (err) {
-            reject(err);
-            ws.close();
-          }
-        });
+    return new Promise((resolve, reject) => {
+      const message = "this is a new message";
+      const tokens = message.split(" ");
+      const packets = [];
+      let pos = 0;
+      packets.push({
+        action: "TOKEN_START",
       });
-    }
-    console.log("\t\tsending message to entity");
-    ws.send(JSON.stringify({ action: "MESSAGE", body: "test body" }));
-    for (let i = 0; i < tokens.length; i++) {
-      await expectToken(i);
-      console.log(`\t\treceived token ${i + 1}/${tokens.length}`);
-    }
+      for (let i = 0; i < tokens.length; i++) {
+        packets.push({
+          action: "TOKEN",
+          token: tokens[i],
+        });
+      }
+      packets.push({
+        action: "TOKEN_END",
+      });
+
+      function expectPacket(data) {
+        const msg = JSON.parse(data.toString());
+        try {
+          assert.deepEqual(msg, packets[pos]);
+        } catch (error) {
+          ws.close();
+          reject(error);
+        }
+        pos++;
+        if (pos === packets.length) {
+          ws.removeListener("message", expectPacket);
+          console.log("\t\t- received all packets");
+          resolve();
+        }
+      }
+      ws.on("message", expectPacket);
+
+      console.log("\t\tsending message to entity");
+      ws.send(JSON.stringify({ action: "MESSAGE", body: message }));
+    });
   },
 ];
